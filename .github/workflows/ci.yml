@@ -8,7 +8,7 @@ on:
 jobs:
   
   build:
-    uses: niranjan2519/dotnet-ci-cd/
+    uses: niranjan2519/dotnet-ci-cd/.github/workflows
   
   test:
     name: Test - Units & Integrations
