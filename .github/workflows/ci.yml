@@ -9,7 +9,7 @@ on:
 env:
   JAVA_REPO: "niranjan2519/java-ci-cd"  # Replace with Java repo
   DOTNET_REPO: "niranjan2519/dotnet-ci-cd"  # Replace with .NET repo
-  PAT_TOKEN: ${{ secrets.CI-Workflow }}  # or use a PAT in secrets if necessary
+  # PAT_TOKEN: ${{ secrets.CI-Workflow }}  # or use a PAT in secrets if necessary
 
 jobs:
   build-java:
