@@ -1,57 +1,50 @@
-name: Main Branch
+name: Build Hello World Applications
 
 on:
   push:
     branches:
-      - 'main'
+      - main
+  workflow_dispatch:
+
+env:
+  JAVA_REPO: "niranjan2519/java-ci-cd"  # Replace with Java repo
+  DOTNET_REPO: "niranjan2519/dotnet-ci-cd"  # Replace with .NET repo
+  # PAT_TOKEN: ${{ secrets.CI-Workflow }}  # or use a PAT in secrets if necessary
 
 jobs:
-  
-  build:
-    uses: .github/workflows.github/workflows/ci.yml
-  
-  test:
-    name: Test - Units & Integrations
-    runs-on: ubuntu-22.04
-    environment: main
-    needs: [build]
+  build-java:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+      - name: Checkout Java Repository
+        uses: actions/checkout@v3
         with:
-          java-version: 11.0.4
-      - name: Maven Package
-        run: mvn -B clean package 
-      - name: Maven Verify
-        run: mvn -B clean verify 
+          repository: ${{ env.JAVA_REPO }}
+          token: ${{ secrets.PAT_TOKEN }}  # Replace PAT_TOKEN with your PAT secret if needed
 
-  sonar:
-    name: Test - SonarCloud Scan
-    runs-on: ubuntu-22.04
-    environment: main
-    needs: [test]
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'  # Adjust Java version as per requirement
+          distribution: 'temurin'
+
+      - name: Build Java Application with Maven
+        run: mvn clean install
+
+  build-dotnet:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+      - name: Checkout .NET Repository
+        uses: actions/checkout@v3
         with:
-          java-version: 11
-      - name: Cache SonarQube packages
-        uses: actions/cache@v1
+          repository: ${{ env.DOTNET_REPO }}
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
         with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v1
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://tired-garlics-grow-49-37-215-196.loca.lt
-        run: mvn clean verify sonar:sonar -Dsonar.projectKey=devops -Dsonar.host.url=https://tired-garlics-grow-49-37-215-196.loca.lt -Dsonar.login=sqp_0a98899f49ddd772b243a815b69e77b5404c8e1e
+          dotnet-version: '9.0.101'  # Adjust .NET version as per requirement
+
+      - name: Restore and Build .NET Application
+        run: | #restore dependencies
+          dotnet restore
+          dotnet build
