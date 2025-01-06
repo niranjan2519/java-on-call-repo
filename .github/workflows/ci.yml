@@ -1,0 +1,55 @@
+name: Build Hello World Applications
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  JAVA_REPO: "https://github.com/niranjan2519/java-ci-cd.git"  # Replace with Java repo
+  DOTNET_REPO: "https://github.com/niranjan2519/dotnet-ci-cd.git"  # Replace with .NET repo
+  PAT_TOKEN: ${{ secrets.CI-Workflow }}  # or use a PAT in secrets if necessary
+
+jobs:
+  build-java:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Java Repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.JAVA_REPO }}
+          token: ${{ secrets.PAT_TOKEN }}  # Replace PAT_TOKEN with your PAT secret if needed
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'  # Adjust Java version as per requirement
+
+      - name: Build Java Application
+        run: |
+          javac HelloWorld.java
+          java HelloWorld
+
+  build-dotnet:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout .NET Repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ env.DOTNET_REPO }}
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0'  # Adjust .NET version as per requirement
+
+      - name: Restore and Build .NET Application
+        run: |
+          dotnet restore
+          dotnet build
+
+      - name: Run .NET Application
+        run: |
+          dotnet run
