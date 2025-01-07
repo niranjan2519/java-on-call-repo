@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     uses: niranjan2519/dotnet-ci-cd/.github/workflows/ci.yml@main
+    with:
+      token: ${{ secrets.PAT_TOKEN }}
   
   test:
     name: Test - Units & Integrations
